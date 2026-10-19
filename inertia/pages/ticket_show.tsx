@@ -1,5 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react'
 import React from 'react'
+import '../css/ticket_show.css'
 
 interface Solution {
   id: number
@@ -35,177 +36,152 @@ export default function TicketShow({ ticket }: { ticket: Ticket }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 font-sans">
+    <main className="ps-app">
       <Head title={`${ticket.title} | Pixel-Soluce`} />
 
-      <div className="max-w-4xl mx-auto">
-        <Link href="/" className="text-amber-400 hover:underline text-sm mb-6 inline-block">
-          ← Retour à tous les S.O.S
-        </Link>
+      <Link href="/" className="ps-back">
+        ← Retour aux demandes
+      </Link>
 
-        {/* DÉTAIL DU PROBLÈME */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-8 shadow-lg">
-          <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
-            <span className="bg-indigo-950 text-indigo-300 border border-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">
-              🎮 {ticket.game}
-            </span>
+      {/* DÉTAIL DU PROBLÈME */}
+      <article className="ps-card ps-detail-card">
+        <header className="ps-card-meta">
+          <span className="ps-tag">{ticket.game}</span>
+          <span className={`ps-status ${ticket.isResolved ? 'is-resolved' : ''}`}>
+            {ticket.isResolved ? 'Résolu' : 'En cours'}
+          </span>
+          <span className="ps-author">par {ticket.pseudo}</span>
 
-            <div className="flex items-center gap-2">
-              {/* BOUTON UPDATE (Résolu / Non résolu) */}
-              <button
-                onClick={() => router.patch(`/tickets/${ticket.id}/toggle`)}
-                className={`text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer transition ${
-                  ticket.isResolved
-                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                }`}
-              >
-                {ticket.isResolved ? '✅ Résolu (Cliquer pour rouvrir)' : '☑️ Marquer comme résolu'}
-              </button>
-
-              {/* BOUTON DELETE TICKET */}
-              <button
-                onClick={() => {
-                  if (confirm('Supprimer ce S.O.S ?')) {
-                    router.delete(`/tickets/${ticket.id}`)
-                  }
-                }}
-                className="bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 text-xs px-3 py-1.5 rounded-lg cursor-pointer"
-              >
-                🗑️ Supprimer
-              </button>
-            </div>
-          </div>
-
-          <h1 className="text-2xl font-bold text-white mb-2">{ticket.title}</h1>
-          <p className="text-slate-300 whitespace-pre-line mb-4">{ticket.description}</p>
-          <p className="text-xs text-slate-500">Demandé par <strong className="text-slate-300">{ticket.pseudo}</strong></p>
-        </div>
-
-        {/* LISTE DES SOLUTIONS ANTI-SPOIL (3 PALIERS) */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold mb-4 text-amber-400">
-            Réponses ({ticket.solutions?.length || 0})
-          </h2>
-          <p className="text-xs text-slate-400 mb-4">
-            Clique sur les paliers un par un pour te débloquer la solution
-          </p>
-
-          {!ticket.solutions || ticket.solutions.length === 0 ? (
-            <p className="text-slate-500 italic bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-              Aucune réponse pour l'instant. Aide {ticket.pseudo} en remplissant le formulaire ci-dessous !
-            </p>
-          ) : (
-            <div className="space-y-6">
-              {ticket.solutions.map((sol) => (
-                <div key={sol.id} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-                  <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                    <span className="text-sm text-slate-400">
-                      Soluce proposée par <strong className="text-white">{sol.pseudo}</strong>
-                    </span>
-                    <button
-                      onClick={() => router.delete(`/solutions/${sol.id}`)}
-                      className="text-xs text-rose-400 hover:underline cursor-pointer"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
-
-                  {/* PALIER 1 */}
-                  <details className="bg-slate-950 border border-slate-800 rounded-lg p-3 group">
-                    <summary className="font-semibold text-emerald-400 cursor-pointer select-none">
-                      🔍 Palier 1 : Indice léger (Cliquer pour dévoiler)
-                    </summary>
-                    <p className="mt-2 text-slate-200 pl-4 border-l-2 border-emerald-500">{sol.hint1}</p>
-                  </details>
-
-                  {/* PALIER 2 */}
-                  <details className="bg-slate-950 border border-slate-800 rounded-lg p-3 group">
-                    <summary className="font-semibold text-amber-400 cursor-pointer select-none">
-                      🧭 Palier 2 : Piste précise (Cliquer pour dévoiler)
-                    </summary>
-                    <p className="mt-2 text-slate-200 pl-4 border-l-2 border-amber-500">{sol.hint2}</p>
-                  </details>
-
-                  {/* PALIER 3 */}
-                  <details className="bg-slate-950 border border-rose-950/60 rounded-lg p-3 group">
-                    <summary className="font-semibold text-rose-400 cursor-pointer select-none">
-                      ⚠️ Palier 3 : Solution brute (Spoil complet)
-                    </summary>
-                    <p className="mt-2 text-slate-200 pl-4 border-l-2 border-rose-500">{sol.fullAnswer}</p>
-                  </details>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* FORMULAIRE POUR AJOUTER UNE SOLUTION */}
-        <section className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 className="text-lg font-bold mb-4 text-white">💡 Proposer une soluce en 3 paliers</h3>
-          <form onSubmit={handleSolutionSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm text-slate-400 mb-1">Ton Pseudo</label>
-              <input
-                type="text"
-                value={data.pseudo}
-                onChange={(e) => setData('pseudo', e.target.value)}
-                placeholder="Ex: GuideMaster"
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white"
-                required
-              />
-              {errors.pseudo && <p className="text-red-400 text-xs mt-1">{errors.pseudo}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm text-emerald-400 mb-1">🔍 Palier 1 : Indice subtil (orienter sans donner la réponse)</label>
-              <input
-                type="text"
-                value={data.hint1}
-                onChange={(e) => setData('hint1', e.target.value)}
-                placeholder="Ex: As-tu bien inspecté les tableaux au 2e étage ?"
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white"
-                required
-              />
-              {errors.hint1 && <p className="text-red-400 text-xs mt-1">{errors.hint1}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm text-amber-400 mb-1">🧭 Palier 2 : Piste précise (expliquer la mécanique)</label>
-              <input
-                type="text"
-                value={data.hint2}
-                onChange={(e) => setData('hint2', e.target.value)}
-                placeholder="Ex: Compte les éléments rouges sur chaque tableau dans l'ordre du couloir."
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white"
-                required
-              />
-              {errors.hint2 && <p className="text-red-400 text-xs mt-1">{errors.hint2}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm text-rose-400 mb-1">⚠️ Palier 3 : Solution directe (pour ceux qui abandonnent)</label>
-              <input
-                type="text"
-                value={data.fullAnswer}
-                onChange={(e) => setData('fullAnswer', e.target.value)}
-                placeholder="Ex: Le code du cadenas est 7-3-9."
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white"
-                required
-              />
-              {errors.fullAnswer && <p className="text-red-400 text-xs mt-1">{errors.fullAnswer}</p>}
-            </div>
-
+          <div className="ps-actions">
             <button
-              type="submit"
-              disabled={processing}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-2.5 rounded-lg transition cursor-pointer"
+              onClick={() => router.patch(`/tickets/${ticket.id}/toggle`)}
+              className="ps-btn ps-btn--secondary ps-btn--sm"
             >
-              {processing ? 'Publication...' : 'Envoyer ma soluce anti-spoil'}
+              {ticket.isResolved ? 'Rouvrir' : 'Marquer résolu'}
             </button>
-          </form>
-        </section>
-      </div>
-    </div>
+            <button
+              onClick={() => {
+                if (confirm('Supprimer cette demande ?')) {
+                  router.delete(`/tickets/${ticket.id}`)
+                }
+              }}
+              className="ps-btn ps-btn--danger ps-btn--sm"
+            >
+              Supprimer
+            </button>
+          </div>
+        </header>
+
+        <h1>{ticket.title}</h1>
+        <p className="ps-detail-desc">{ticket.description}</p>
+      </article>
+
+      {/* LISTE DES SOLUTIONS */}
+      <section className="ps-section">
+        <h2>Solutions ({ticket.solutions?.length || 0})</h2>
+        <p className="ps-section-sub">
+          Dévoilez les indices au fur et à mesure pour ne pas vous gâcher le jeu.
+        </p>
+
+        {!ticket.solutions || ticket.solutions.length === 0 ? (
+          <p className="ps-empty">
+            Aucune solution pour l'instant. Aidez {ticket.pseudo} avec le formulaire ci-dessous !
+          </p>
+        ) : (
+          <div className="ps-list">
+            {ticket.solutions.map((sol) => (
+              <article key={sol.id} className="ps-card ps-solution-item">
+                <header className="ps-solution-header">
+                  <span>Proposé par <strong>{sol.pseudo}</strong></span>
+                  <button
+                    onClick={() => router.delete(`/solutions/${sol.id}`)}
+                    className="ps-link-danger"
+                  >
+                    Supprimer
+                  </button>
+                </header>
+
+                <details className="ps-spoiler">
+                  <summary>1. Indice léger</summary>
+                  <p>{sol.hint1}</p>
+                </details>
+
+                <details className="ps-spoiler">
+                  <summary>2. Piste précise</summary>
+                  <p>{sol.hint2}</p>
+                </details>
+
+                <details className="ps-spoiler">
+                  <summary>3. Solution complète</summary>
+                  <p>{sol.fullAnswer}</p>
+                </details>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* FORMULAIRE POUR AJOUTER UNE SOLUTION */}
+      <section className="ps-section ps-form-section">
+        <h2>Proposer une solution en 3 étapes</h2>
+        <form onSubmit={handleSolutionSubmit} className="ps-form">
+          <label>
+            <span>Votre pseudo</span>
+            <input
+              type="text"
+              value={data.pseudo}
+              onChange={(e) => setData('pseudo', e.target.value)}
+              placeholder="Ex: GuideMaster"
+              required
+            />
+            {errors.pseudo && <small className="ps-error">{errors.pseudo}</small>}
+          </label>
+
+          <label>
+            <span>Étape 1 : Indice léger (orienter sans dévoiler)</span>
+            <input
+              type="text"
+              value={data.hint1}
+              onChange={(e) => setData('hint1', e.target.value)}
+              placeholder="Ex: As-tu bien inspecté les tableaux au 2e étage ?"
+              required
+            />
+            {errors.hint1 && <small className="ps-error">{errors.hint1}</small>}
+          </label>
+
+          <label>
+            <span>Étape 2 : Piste précise (expliquer la mécanique)</span>
+            <input
+              type="text"
+              value={data.hint2}
+              onChange={(e) => setData('hint2', e.target.value)}
+              placeholder="Ex: Compte les éléments rouges sur chaque tableau."
+              required
+            />
+            {errors.hint2 && <small className="ps-error">{errors.hint2}</small>}
+          </label>
+
+          <label>
+            <span>Étape 3 : Solution directe</span>
+            <input
+              type="text"
+              value={data.fullAnswer}
+              onChange={(e) => setData('fullAnswer', e.target.value)}
+              placeholder="Ex: Le code du cadenas est 7-3-9."
+              required
+            />
+            {errors.fullAnswer && <small className="ps-error">{errors.fullAnswer}</small>}
+          </label>
+
+          <button
+            type="submit"
+            disabled={processing}
+            className="ps-btn ps-btn--primary"
+          >
+            {processing ? 'Publication...' : 'Publier la solution'}
+          </button>
+        </form>
+      </section>
+    </main>
   )
 }
