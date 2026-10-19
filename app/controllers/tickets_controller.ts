@@ -13,33 +13,10 @@ const createTicketValidator = vine.compile(
 )
 
 export default class TicketsController {
-  // READ : Afficher tous les tickets avec filtres optionnels (recherche par jeu & statut)
-  async index({ request, inertia }: HttpContext) {
-    const search = request.input('search')
-    const status = request.input('status')
-
-    // On initialise la requête Lucid ORM de base
-    const query = Ticket.query().preload('solutions').orderBy('created_at', 'desc')
-
-    // 1. Filtrer par nom de jeu si le paramètre 'search' est présent
-    if (search) {
-      query.where('game', 'like', `%${search}%`)
-    }
-
-    // 2. Filtrer par statut (résolu ou en galère) si le paramètre 'status' est présent
-    if (status === 'resolved') {
-      query.where('isResolved', true)
-    } else if (status === 'pending') {
-      query.where('isResolved', false)
-    }
-
-    const tickets = await query
-
-    // On renvoie les tickets ET les filtres actifs à React pour garder l'état visuel
-    return inertia.render('home', { 
-      tickets, 
-      filters: { search, status } 
-    })
+  // READ : Afficher tous les tickets sur la page d'accueil
+  async index({ inertia }: HttpContext) {
+    const tickets = await Ticket.query().preload('solutions').orderBy('created_at', 'desc')
+    return inertia.render('home', { tickets })
   }
 
   // READ : Afficher un ticket précis et ses solutions
@@ -49,6 +26,7 @@ export default class TicketsController {
       .preload('solutions', (query) => query.orderBy('created_at', 'asc'))
       .firstOrFail()
 
+    // .serialize() permet de transmettre proprement l'ID et les relations à React
     return inertia.render('ticket_show', { ticket: ticket.serialize() })
   }
 
