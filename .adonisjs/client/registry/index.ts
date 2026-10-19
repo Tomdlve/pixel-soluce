@@ -6,47 +6,47 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
-  'home': {
+  'tickets.index': {
     methods: ["GET","HEAD"],
     pattern: '/',
-    tokens: [{"old":"/","type":0,"val":"/","end":""}],
-    types: placeholder as Registry['home']['types'],
+    tokens: [[0,"/"]],
+    types: placeholder as Registry['tickets.index']['types'],
   },
-  'new_account.create': {
+  'tickets.show': {
     methods: ["GET","HEAD"],
-    pattern: '/signup',
-    tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.create']['types'],
+    pattern: '/tickets/:id',
+    tokens: [[0,"tickets"],[1,"id"]],
+    types: placeholder as Registry['tickets.show']['types'],
   },
-  'new_account.store': {
+  'tickets.store': {
     methods: ["POST"],
-    pattern: '/signup',
-    tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.store']['types'],
+    pattern: '/tickets',
+    tokens: [[0,"tickets"]],
+    types: placeholder as Registry['tickets.store']['types'],
   },
-  'session.create': {
-    methods: ["GET","HEAD"],
-    pattern: '/login',
-    tokens: [{"old":"/login","type":0,"val":"login","end":""}],
-    types: placeholder as Registry['session.create']['types'],
+  'tickets.toggle_status': {
+    methods: ["PATCH"],
+    pattern: '/tickets/:id/toggle',
+    tokens: [[0,"tickets"],[1,"id"],[0,"toggle"]],
+    types: placeholder as Registry['tickets.toggle_status']['types'],
   },
-  'session.store': {
+  'tickets.destroy': {
+    methods: ["DELETE"],
+    pattern: '/tickets/:id',
+    tokens: [[0,"tickets"],[1,"id"]],
+    types: placeholder as Registry['tickets.destroy']['types'],
+  },
+  'solutions.store': {
     methods: ["POST"],
-    pattern: '/login',
-    tokens: [{"old":"/login","type":0,"val":"login","end":""}],
-    types: placeholder as Registry['session.store']['types'],
+    pattern: '/tickets/:ticketId/solutions',
+    tokens: [[0,"tickets"],[1,"ticketId"],[0,"solutions"]],
+    types: placeholder as Registry['solutions.store']['types'],
   },
-  'dashboard': {
-    methods: ["GET","HEAD"],
-    pattern: '/dashboard',
-    tokens: [{"old":"/dashboard","type":0,"val":"dashboard","end":""}],
-    types: placeholder as Registry['dashboard']['types'],
-  },
-  'session.destroy': {
-    methods: ["POST"],
-    pattern: '/logout',
-    tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
-    types: placeholder as Registry['session.destroy']['types'],
+  'solutions.destroy': {
+    methods: ["DELETE"],
+    pattern: '/solutions/:id',
+    tokens: [[0,"solutions"],[1,"id"]],
+    types: placeholder as Registry['solutions.destroy']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

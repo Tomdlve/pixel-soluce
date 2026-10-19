@@ -8,23 +8,43 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class SolutionSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'updatedAt'] as const
+  static $columns = ['createdAt', 'fullAnswer', 'hint1', 'hint2', 'id', 'pseudo', 'ticketId', 'updatedAt'] as const
   $columns = SolutionSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
+  @column()
+  declare fullAnswer: string
+  @column()
+  declare hint1: string
+  @column()
+  declare hint2: string
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare pseudo: string
+  @column()
+  declare ticketId: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
 
 export class TicketSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'updatedAt'] as const
+  static $columns = ['createdAt', 'description', 'game', 'id', 'isResolved', 'pseudo', 'title', 'updatedAt'] as const
   $columns = TicketSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
+  @column()
+  declare description: string
+  @column()
+  declare game: string
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare isResolved: boolean | null
+  @column()
+  declare pseudo: string
+  @column()
+  declare title: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

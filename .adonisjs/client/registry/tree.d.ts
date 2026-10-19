@@ -2,15 +2,15 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
-  home: typeof routes['home']
-  newAccount: {
-    create: typeof routes['new_account.create']
-    store: typeof routes['new_account.store']
+  tickets: {
+    index: typeof routes['tickets.index']
+    show: typeof routes['tickets.show']
+    store: typeof routes['tickets.store']
+    toggleStatus: typeof routes['tickets.toggle_status']
+    destroy: typeof routes['tickets.destroy']
   }
-  session: {
-    create: typeof routes['session.create']
-    store: typeof routes['session.store']
-    destroy: typeof routes['session.destroy']
+  solutions: {
+    store: typeof routes['solutions.store']
+    destroy: typeof routes['solutions.destroy']
   }
-  dashboard: typeof routes['dashboard']
 }

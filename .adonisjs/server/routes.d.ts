@@ -4,30 +4,32 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
-    'home': { paramsTuple?: []; params?: {} }
-    'new_account.create': { paramsTuple?: []; params?: {} }
-    'new_account.store': { paramsTuple?: []; params?: {} }
-    'session.create': { paramsTuple?: []; params?: {} }
-    'session.store': { paramsTuple?: []; params?: {} }
-    'dashboard': { paramsTuple?: []; params?: {} }
-    'session.destroy': { paramsTuple?: []; params?: {} }
+    'tickets.index': { paramsTuple?: []; params?: {} }
+    'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.store': { paramsTuple?: []; params?: {} }
+    'tickets.toggle_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'solutions.store': { paramsTuple: [ParamValue]; params: {'ticketId': ParamValue} }
+    'solutions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
-    'home': { paramsTuple?: []; params?: {} }
-    'new_account.create': { paramsTuple?: []; params?: {} }
-    'session.create': { paramsTuple?: []; params?: {} }
-    'dashboard': { paramsTuple?: []; params?: {} }
+    'tickets.index': { paramsTuple?: []; params?: {} }
+    'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
-    'home': { paramsTuple?: []; params?: {} }
-    'new_account.create': { paramsTuple?: []; params?: {} }
-    'session.create': { paramsTuple?: []; params?: {} }
-    'dashboard': { paramsTuple?: []; params?: {} }
+    'tickets.index': { paramsTuple?: []; params?: {} }
+    'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
-    'new_account.store': { paramsTuple?: []; params?: {} }
-    'session.store': { paramsTuple?: []; params?: {} }
-    'session.destroy': { paramsTuple?: []; params?: {} }
+    'tickets.store': { paramsTuple?: []; params?: {} }
+    'solutions.store': { paramsTuple: [ParamValue]; params: {'ticketId': ParamValue} }
+  }
+  PATCH: {
+    'tickets.toggle_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'tickets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'solutions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {
