@@ -1,5 +1,6 @@
-import { Head, Link, useForm, router } from '@inertiajs/react'
+import { Head, Link, useForm, router, usePage } from '@inertiajs/react'
 import React, { useState } from 'react'
+import NavLink from '../components/nav_link'
 import '../css/home.css'
 
 interface Solution {
@@ -8,6 +9,7 @@ interface Solution {
 
 interface Ticket {
   id: number
+  userId: number 
   pseudo: string
   game: string
   title: string
@@ -22,6 +24,9 @@ interface Filters {
 }
 
 export default function Home({ tickets, filters = {} }: { tickets: Ticket[]; filters?: Filters }) {
+  // Récupération de l'utilisateur connecté via le middleware Inertia
+  const { user } = usePage().props
+
   // Gestion du formulaire de création de S.O.S
   const { data, setData, post, processing, reset, errors } = useForm({
     pseudo: '',
@@ -32,6 +37,7 @@ export default function Home({ tickets, filters = {} }: { tickets: Ticket[]; fil
 
   // États locaux pour les filtres de recherche
   const [search, setSearch] = useState(filters?.search || '')
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     post('/tickets', {
@@ -54,9 +60,46 @@ export default function Home({ tickets, filters = {} }: { tickets: Ticket[]; fil
     )
   }
 
+  // Fonction pour supprimer un ticket (si on en est l'auteur)
+  const handleDeleteTicket = (ticketId: number, e: React.MouseEvent) => {
+    e.preventDefault() // Évite de cliquer sur le lien de la carte
+    if (confirm('Voulez-vous vraiment supprimer ce ticket ?')) {
+      router.delete(`/tickets/${ticketId}`)
+    }
+  }
+
   return (
     <main className="ps-app">
       <Head title="Pixel-Soluce | Forum d'entraide" />
+
+      {/* NAVBAR UTILISANT TON NAVLINK AVEC LA ROUTE 'home' ET 'session.create' */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '10px 0', borderBottom: '1px solid #eaeaea' }}>
+        <div>
+          <NavLink route="home" style={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}>
+            Pixel-Soluce
+          </NavLink>
+        </div>
+        
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span>Bonjour, {user.fullName}</span>
+            <Link 
+              href="/logout" 
+              method="post" 
+              as="button" 
+              style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', padding: 0 }}
+            >
+              Se déconnecter
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <NavLink route="session.create" style={{ textDecoration: 'none' }}>
+              Se connecter
+            </NavLink>
+          </div>
+        )}
+      </nav>
 
       {/* EN-TÊTE */}
       <header className="ps-header">
@@ -109,28 +152,46 @@ export default function Home({ tickets, filters = {} }: { tickets: Ticket[]; fil
           <p className="ps-empty">Aucune demande trouvée avec ces critères.</p>
         ) : (
           <div className="ps-list">
-            {tickets.map((ticket) => (
-              <Link
-                key={ticket.id}
-                href={`/tickets/${ticket.id}`}
-                className="ps-card"
-              >
-                <div className="ps-card-meta">
-                  <span className="ps-tag">{ticket.game}</span>
-                  <span className={`ps-status ${ticket.isResolved ? 'is-resolved' : ''}`}>
-                    {ticket.isResolved ? 'Résolu' : 'En cours'}
-                  </span>
-                  <span className="ps-author">par {ticket.pseudo}</span>
-                </div>
+            {tickets.map((ticket) => {
+              // Vérifie si l'utilisateur connecté est le propriétaire du ticket
+              const isOwner = user && user.id === ticket.userId
 
-                <h3>{ticket.title}</h3>
-                <p>{ticket.description}</p>
+              return (
+                <Link
+                  key={ticket.id}
+                  href={`/tickets/${ticket.id}`}
+                  className="ps-card"
+                  style={{ position: 'relative', display: 'block' }}
+                >
+                  <div className="ps-card-meta">
+                    <span className="ps-tag">{ticket.game}</span>
+                    <span className={`ps-status ${ticket.isResolved ? 'is-resolved' : ''}`}>
+                      {ticket.isResolved ? 'Résolu' : 'En cours'}
+                    </span>
+                    <span className="ps-author">par {ticket.pseudo}</span>
+                  </div>
 
-                <span className="ps-card-soluces">
-                  {ticket.solutions?.length || 0} soluce(s) disponible(s) →
-                </span>
-              </Link>
-            ))}
+                  <h3>{ticket.title}</h3>
+                  <p>{ticket.description}</p>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                    <span className="ps-card-soluces">
+                      {ticket.solutions?.length || 0} soluce(s) disponible(s) →
+                    </span>
+
+                    {/* Bouton de suppression affiché uniquement pour le propriétaire */}
+                    {isOwner && (
+                      <button
+                        onClick={(e) => handleDeleteTicket(ticket.id, e)}
+                        style={{ background: '#ff4d4f', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', zIndex: 2 }}
+                      >
+                        Supprimer
+                      </button>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         )}
       </section>

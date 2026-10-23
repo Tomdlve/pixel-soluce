@@ -4,7 +4,11 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
-    'tickets.index': { paramsTuple?: []; params?: {} }
+    'session.create': { paramsTuple?: []; params?: {} }
+    'session.store': { paramsTuple?: []; params?: {} }
+    'auth.register': { paramsTuple?: []; params?: {} }
+    'new_account.store': { paramsTuple?: []; params?: {} }
+    'home': { paramsTuple?: []; params?: {} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.store': { paramsTuple?: []; params?: {} }
     'tickets.toggle_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -13,14 +17,20 @@ export type ScannedRoutes = {
     'solutions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
-    'tickets.index': { paramsTuple?: []; params?: {} }
+    'session.create': { paramsTuple?: []; params?: {} }
+    'auth.register': { paramsTuple?: []; params?: {} }
+    'home': { paramsTuple?: []; params?: {} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
-    'tickets.index': { paramsTuple?: []; params?: {} }
+    'session.create': { paramsTuple?: []; params?: {} }
+    'auth.register': { paramsTuple?: []; params?: {} }
+    'home': { paramsTuple?: []; params?: {} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
+    'session.store': { paramsTuple?: []; params?: {} }
+    'new_account.store': { paramsTuple?: []; params?: {} }
     'tickets.store': { paramsTuple?: []; params?: {} }
     'solutions.store': { paramsTuple: [ParamValue]; params: {'ticketId': ParamValue} }
   }

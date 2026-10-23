@@ -1,5 +1,5 @@
 import AuthLayout from '~/layouts/auth'
-import { Form, Link } from '@adonisjs/inertia/react'
+import { Form } from '@adonisjs/inertia/react'
 
 export default function Login() {
   return (
@@ -7,8 +7,8 @@ export default function Login() {
       <h1 className="auth__title">Welcome back</h1>
       <p className="auth__sub">Sign in to continue building.</p>
 
-      <Form route="session.store">
-        {({ errors, processing }) => (
+      <Form action="/login" method="POST">
+        {({ errors, processing }: { errors: Record<string, string>; processing: boolean }) => (
           <div className="auth__form">
             <div className="field">
               <label className="field__label" htmlFor="email">
@@ -56,12 +56,12 @@ export default function Login() {
 
       <p className="auth__foot">
         New here?{' '}
-        <Link route="new_account.create" className="il">
+        <a href="/register" className="il" style={{ textDecoration: 'underline', color: 'inherit' }}>
           Create an account
-        </Link>
+        </a>
       </p>
     </>
   )
 }
 
-Login.layout = [AuthLayout]
+Login.layout = (page: any) => <AuthLayout children={page} />

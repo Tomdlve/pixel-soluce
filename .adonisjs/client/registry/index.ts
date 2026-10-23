@@ -6,11 +6,35 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
-  'tickets.index': {
+  'session.create': {
+    methods: ["GET","HEAD"],
+    pattern: '/login',
+    tokens: [[0,"login"]],
+    types: placeholder as Registry['session.create']['types'],
+  },
+  'session.store': {
+    methods: ["POST"],
+    pattern: '/login',
+    tokens: [[0,"login"]],
+    types: placeholder as Registry['session.store']['types'],
+  },
+  'auth.register': {
+    methods: ["GET","HEAD"],
+    pattern: '/register',
+    tokens: [[0,"register"]],
+    types: placeholder as Registry['auth.register']['types'],
+  },
+  'new_account.store': {
+    methods: ["POST"],
+    pattern: '/register',
+    tokens: [[0,"register"]],
+    types: placeholder as Registry['new_account.store']['types'],
+  },
+  'home': {
     methods: ["GET","HEAD"],
     pattern: '/',
     tokens: [[0,"/"]],
-    types: placeholder as Registry['tickets.index']['types'],
+    types: placeholder as Registry['home']['types'],
   },
   'tickets.show': {
     methods: ["GET","HEAD"],

@@ -29,7 +29,7 @@ export class SolutionSchema extends BaseModel {
 }
 
 export class TicketSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'game', 'id', 'isResolved', 'pseudo', 'title', 'updatedAt'] as const
+  static $columns = ['createdAt', 'description', 'game', 'id', 'isResolved', 'pseudo', 'title', 'updatedAt', 'userId'] as const
   $columns = TicketSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -47,6 +47,8 @@ export class TicketSchema extends BaseModel {
   declare title: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
 }
 
 export class UserSchema extends BaseModel {

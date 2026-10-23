@@ -1,9 +1,10 @@
-import { Head, Link, router, useForm } from '@inertiajs/react'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react'
 import React from 'react'
 import '../css/ticket_show.css'
 
 interface Solution {
   id: number
+  userId: number
   pseudo: string
   hint1: string
   hint2: string
@@ -12,6 +13,7 @@ interface Solution {
 
 interface Ticket {
   id: number
+  userId: number
   pseudo: string
   game: string
   title: string
@@ -21,6 +23,9 @@ interface Ticket {
 }
 
 export default function TicketShow({ ticket }: { ticket: Ticket }) {
+  // Récupération de l'utilisateur connecté
+  const { user } = usePage().props as { user?: { id: number; fullName: string } }
+
   const { data, setData, post, processing, reset, errors } = useForm({
     pseudo: '',
     hint1: '',
@@ -89,34 +94,47 @@ export default function TicketShow({ ticket }: { ticket: Ticket }) {
           </p>
         ) : (
           <div className="ps-list">
-            {ticket.solutions.map((sol) => (
-              <article key={sol.id} className="ps-card ps-solution-item">
-                <header className="ps-solution-header">
-                  <span>Proposé par <strong>{sol.pseudo}</strong></span>
-                  <button
-                    onClick={() => router.delete(`/solutions/${sol.id}`)}
-                    className="ps-link-danger"
-                  >
-                    Supprimer
-                  </button>
-                </header>
+            {ticket.solutions.map((sol) => {
+              // Vérifie si l'utilisateur connecté est l'auteur de la solution
+              const isSolutionOwner = user && user.id === sol.userId
 
-                <details className="ps-spoiler">
-                  <summary>1. Indice léger</summary>
-                  <p>{sol.hint1}</p>
-                </details>
+              return (
+                <article key={sol.id} className="ps-card ps-solution-item">
+                  <header className="ps-solution-header">
+                    <span>Proposé par <strong>{sol.pseudo}</strong></span>
 
-                <details className="ps-spoiler">
-                  <summary>2. Piste précise</summary>
-                  <p>{sol.hint2}</p>
-                </details>
+                    {/* Le bouton de suppression s'affiche uniquement pour le propriétaire */}
+                    {isSolutionOwner && (
+                      <button
+                        onClick={() => {
+                          if (confirm('Voulez-vous vraiment supprimer cette solution ?')) {
+                            router.delete(`/solutions/${sol.id}`)
+                          }
+                        }}
+                        className="ps-link-danger"
+                      >
+                        Supprimer
+                      </button>
+                    )}
+                  </header>
 
-                <details className="ps-spoiler">
-                  <summary>3. Solution complète</summary>
-                  <p>{sol.fullAnswer}</p>
-                </details>
-              </article>
-            ))}
+                  <details className="ps-spoiler">
+                    <summary>1. Indice léger</summary>
+                    <p>{sol.hint1}</p>
+                  </details>
+
+                  <details className="ps-spoiler">
+                    <summary>2. Piste précise</summary>
+                    <p>{sol.hint2}</p>
+                  </details>
+
+                  <details className="ps-spoiler">
+                    <summary>3. Solution complète</summary>
+                    <p>{sol.fullAnswer}</p>
+                  </details>
+                </article>
+              )
+            })}
           </div>
         )}
       </section>

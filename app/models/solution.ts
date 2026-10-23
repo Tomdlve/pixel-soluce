@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm' // <--- CORRECTION ICI (@adonisjs/lucid)
+import type { BelongsTo } from '@adonisjs/lucid/types/relations' // <--- CORRECTION ICI (@adonisjs/lucid)
+import User from '#models/user'
 import Ticket from '#models/ticket'
 
 export default class Solution extends BaseModel {
@@ -9,6 +10,9 @@ export default class Solution extends BaseModel {
 
   @column()
   declare ticketId: number
+
+  @column()
+  declare userId: number
 
   @column()
   declare pseudo: string
@@ -21,6 +25,9 @@ export default class Solution extends BaseModel {
 
   @column()
   declare fullAnswer: string
+
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
 
   @belongsTo(() => Ticket)
   declare ticket: BelongsTo<typeof Ticket>

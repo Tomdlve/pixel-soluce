@@ -8,7 +8,7 @@ export default function Signup() {
       <p className="auth__sub">Start building with the starter kit.</p>
 
       <Form route="new_account.store">
-        {({ errors, processing }) => (
+        {({ errors, processing }: { errors: Record<string, string>; processing: boolean }) => (
           <div className="auth__form">
             <div className="field">
               <label className="field__label" htmlFor="fullName">
